@@ -145,7 +145,7 @@
 
     // Reacquire on visibility change
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && !wakeLock) {
+      if (document.visibilityState === 'visible' && screen_on && !wakeLock) {
         requestWakeLock();
       }
     });
