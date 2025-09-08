@@ -136,10 +136,10 @@
       if (!wakeLock) {
         const success = await requestWakeLock();
         if (success) {
-          window.location.href = flashURL + "&input=text&text=screen_on";
+          window.location.href = flashURL + `&input=text&text=${screen_on ? "screen_on" : "screen_off"}`;
         }
       } else {
-        window.location.href = flashURL + "&input=text&text=screen_off";
+        window.location.href = flashURL + `&input=text&text=${screen_on ? "screen_on" : "screen_off"}`;
       }
     });
 
