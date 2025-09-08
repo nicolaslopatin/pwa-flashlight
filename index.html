@@ -31,38 +31,45 @@
 
   <script>
     let wakeLock = null;
-
+    const statusEl = document.getElementById('status');
+  
+    const updateStatus = (msg) => {
+      statusEl.textContent = msg;
+      console.log(msg);
+    };
+  
     const requestWakeLock = async () => {
       try {
         wakeLock = await navigator.wakeLock.request('screen');
-        document.getElementById('status').textContent = 'Screen awake';
+        updateStatus('✅ Wake Lock acquired');
         wakeLock.addEventListener('release', () => {
-          document.getElementById('status').textContent = 'Wake Lock released';
+          updateStatus('⚠️ Wake Lock released');
+          wakeLock = null;
         });
       } catch (err) {
-        document.getElementById('status').textContent = `Wake Lock error: ${err.name}`;
-        console.error(`${err.name}, ${err.message}`);
+        updateStatus(`❌ Wake Lock error: ${err.name}`);
       }
     };
-
-    // Trigger on user interaction
+  
+    // Initial trigger on user interaction
     document.addEventListener('click', () => {
       if ('wakeLock' in navigator) {
         requestWakeLock();
+      } else {
+        updateStatus('Wake Lock API not supported');
       }
     });
-
+  
     // Reacquire on visibility change
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && wakeLock === null) {
-        requestWakeLock();
+      if (document.visibilityState === 'visible') {
+        if ('wakeLock' in navigator) {
+          requestWakeLock();
+        } else {
+          updateStatus('Wake Lock API not supported');
+        }
       }
     });
-
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
   </script>
 </body>
 </html>
