@@ -118,7 +118,7 @@
           document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-light');
           document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-light');
           themeMeta.setAttribute('content', '#ffffff');
-          window.location.href = screenToggleURL;
+          window.location.href = screenToggleURL + `&input=text&text=${screen_on ? "screen_on" : "screen_off"}`;
         }
       } else {
         const success = await releaseWakeLock();
@@ -127,7 +127,7 @@
           document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-dark');
           document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-dark');
           themeMeta.setAttribute('content', '#000000');
-          window.location.href = screenToggleURL;
+          window.location.href = screenToggleURL + `&input=text&text=${screen_on ? "screen_on" : "screen_off"}`;
         }
       }
     });
