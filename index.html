@@ -6,38 +6,75 @@
   <title>Flashlight PWA</title>
   <link rel="manifest" href="manifest.json" />
   <style>
-    html, body {
+    :root {
+      --bg-dark: #000000;
+      --text-dark: #cccccc;
+      --bg-light: #ffffff;
+      --text-light: #000000;
+    }
+
+    body {
       margin: 0;
       padding: 0;
-      background: white;
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+      font-family: sans-serif;
       height: 100vh;
-      width: 100vw;
-      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       touch-action: manipulation;
+      transition: background-color 0.3s, color 0.3s;
     }
+
+    .button-column {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      align-items: center;
+    }
+
+    button {
+      background: none;
+      border: none;
+      font-size: 48px;
+      color: inherit;
+      cursor: pointer;
+    }
+
     #status {
       position: absolute;
       bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-family: sans-serif;
       font-size: 14px;
-      color: #333;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <div id="status">Tap to keep screen awake</div>
+  <div class="button-column">
+    <button id="flashlightBtn" title="Flashlight">🔦</button>
+    <button id="screenBtn" title="Screen Toggle">🖥️</button>
+    <button id="flashBtn" title="Flashing">⚡</button>
+  </div>
+  <div id="status">Tap a button to begin</div>
 
   <script>
     let wakeLock = null;
+    let screen_on = false;
+
+    // Configurable URLs
+    const flashlightURL = 'https://example.com/flashlight';
+    const screenToggleURL = 'https://example.com/screen-toggle';
+    const flashURL = 'https://example.com/flashing';
+
     const statusEl = document.getElementById('status');
-  
+
     const updateStatus = (msg) => {
       statusEl.textContent = msg;
       console.log(msg);
     };
-  
+
     const requestWakeLock = async () => {
       try {
         wakeLock = await navigator.wakeLock.request('screen');
@@ -46,30 +83,74 @@
           updateStatus('⚠️ Wake Lock released');
           wakeLock = null;
         });
+        return true;
       } catch (err) {
         updateStatus(`❌ Wake Lock error: ${err.name}`);
+        return false;
       }
     };
-  
-    // Initial trigger on user interaction
-    document.addEventListener('click', () => {
-      if ('wakeLock' in navigator) {
-        requestWakeLock();
-      } else {
-        updateStatus('Wake Lock API not supported');
+
+    const releaseWakeLock = async () => {
+      try {
+        if (wakeLock) {
+          await wakeLock.release();
+          wakeLock = null;
+          updateStatus('🔓 Wake Lock released manually');
+          return true;
+        }
+      } catch (err) {
+        updateStatus(`❌ Release error: ${err.name}`);
+        return false;
       }
+    };
+
+    // Button behaviors
+    document.getElementById('flashlightBtn').addEventListener('click', () => {
+      window.location.href = flashlightURL;
     });
-  
-    // Reacquire on visibility change
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        if ('wakeLock' in navigator) {
-          requestWakeLock();
-        } else {
-          updateStatus('Wake Lock API not supported');
+
+    document.getElementById('screenBtn').addEventListener('click', async () => {
+      if (!screen_on) {
+        const success = await requestWakeLock();
+        if (success) {
+          screen_on = true;
+          document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-light');
+          document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-light');
+          window.location.href = screenToggleURL;
+        }
+      } else {
+        const success = await releaseWakeLock();
+        if (success) {
+          screen_on = false;
+          document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-dark');
+          document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-dark');
+          window.location.href = screenToggleURL;
         }
       }
     });
+
+    document.getElementById('flashBtn').addEventListener('click', async () => {
+      if (!wakeLock) {
+        const success = await requestWakeLock();
+        if (success) {
+          window.location.href = flashURL;
+        }
+      } else {
+        window.location.href = flashURL;
+      }
+    });
+
+    // Reacquire on visibility change
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && screen_on && !wakeLock) {
+        requestWakeLock();
+      }
+    });
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
   </script>
 </body>
 </html>
