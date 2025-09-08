@@ -62,7 +62,6 @@
   <script>
     let wakeLock = null;
     let screen_on = false;
-    let light_on = true;
 
     // Configurable URLs
     const flashlightURL = 'shortcuts://run-shortcut?name=Multi%20Light';
@@ -107,20 +106,8 @@
     };
 
     // Button behaviors
-    document.getElementById('flashlightBtn').addEventListener('click', async () => {
-      if (!light_on) {
-        const success = await requestWakeLock();
-        if (success) {
-          light_on = true;
-          window.location.href = flashlightURL + `&input=text&text=${light_on ? "light_on" : "light_off"}`;
-        }
-      } else {
-        const success = await releaseWakeLock();
-        if (success) {
-          light_on = false;
-          window.location.href = flashlightURL + `&input=text&text=${light_on ? "light_on" : "light_off"}`;
-        }
-      }
+    document.getElementById('flashlightBtn').addEventListener('click', () => {
+      window.location.href = flashlightURL;
     });
 
     document.getElementById('screenBtn').addEventListener('click', async () => {
@@ -158,7 +145,7 @@
 
     // Reacquire on visibility change
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible' && (screen_on || light_on) && !wakeLock) {
+      if (document.visibilityState === 'visible' && !wakeLock) {
         requestWakeLock();
       }
     });
