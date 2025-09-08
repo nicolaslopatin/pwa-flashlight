@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flashlight PWA</title>
   <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#000000" id="themeColorMeta" />
   <style>
     :root {
       --bg-dark: #000000;
@@ -25,7 +26,6 @@
       justify-content: center;
       align-items: center;
       touch-action: manipulation;
-      transition: background-color 0.3s, color 0.3s;
     }
 
     .button-column {
@@ -69,6 +69,7 @@
     const flashURL = 'https://example.com/flashing';
 
     const statusEl = document.getElementById('status');
+    const themeMeta = document.getElementById('themeColorMeta');
 
     const updateStatus = (msg) => {
       statusEl.textContent = msg;
@@ -116,6 +117,7 @@
           screen_on = true;
           document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-light');
           document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-light');
+          themeMeta.setAttribute('content', '#ffffff');
           window.location.href = screenToggleURL;
         }
       } else {
@@ -124,6 +126,7 @@
           screen_on = false;
           document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-dark');
           document.body.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-dark');
+          themeMeta.setAttribute('content', '#000000');
           window.location.href = screenToggleURL;
         }
       }
@@ -133,10 +136,10 @@
       if (!wakeLock) {
         const success = await requestWakeLock();
         if (success) {
-          window.location.href = flashURL;
+          window.location.href = flashURL + "&input=text&text=screen_on";
         }
       } else {
-        window.location.href = flashURL;
+        window.location.href = flashURL + "&input=text&text=screen_off";
       }
     });
 
