@@ -82,7 +82,7 @@
         updateStatus('✅ Wake Lock acquired');
         wakeLock.addEventListener('release', () => {
           updateStatus('⚠️ Wake Lock released');
-          //wakeLock = null;
+          wakeLock = null;
         });
         return true;
       } catch (err) {
