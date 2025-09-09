@@ -4,3 +4,5 @@ Links to Shortcuts needed for the flashlight to work:
 * [Multi Light](https://www.icloud.com/shortcuts/6fbe9df9c9fb4e58a3560f46223d22ff)
 * [Toggle Screen Brightness](https://www.icloud.com/shortcuts/73e36a3c2f7d40b485a76cdc00785c24)
 * [Flash Flashlight (Front And Back Light)](https://www.icloud.com/shortcuts/92dd0bcfa4a14da9becfb32a937a055f)
+
+Open the web page on iOS, press Share and press Add to Home Screen to add the website as a PWA.
